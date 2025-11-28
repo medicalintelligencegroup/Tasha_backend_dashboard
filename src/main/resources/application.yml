@@ -1,0 +1,46 @@
+spring:
+  application:
+    name: patient-service
+  profiles:
+    active: dev
+  jackson:
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+    deserialization:
+      FAIL_ON_UNKNOWN_PROPERTIES: false
+  data:
+    mongodb:
+      uri: mongodb+srv://<username>:<password>@instanceUrl/patient-service?retryWrites=true&w=majority
+      database: patient-service
+cloud:
+  aws:
+    region:
+      auto: false
+      static: eu-west-1
+    stack:
+      auto: false
+logging:
+  level:
+    com.auth0.spring.security.api: warn
+
+auth0:
+  domain: "mig-test.uk.auth0.com"
+  api-audience: "https://api.test.mig.com"
+  management-api-audience: "https://mig-test.uk.auth0.com/api/v2/"
+  client-id: "clientIdForSwaggerInStagingEnvironment"
+  client-secret: "clientSecretforStagingEnvironment"
+
+swagger:
+  host: "mig-test.uk.auth0.com"
+  auth0:
+    domain: "mig-test.uk.auth0.com"
+    client-id: "clientIdForSwaggerInStagingEnvironment"
+    api-audience: "https://api.test.mig.com"
+    client-secret: "clientSecretforSwaggerInStagingEnvironment"
+
+
+# spring boot actuator endpoints
+management:
+  endpoints:
+    web:
+      base-path: /
