@@ -2,7 +2,9 @@ package com.mig.patientservice.web.patient;
 
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -14,7 +16,7 @@ import org.junit.runner.RunWith;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
@@ -31,6 +33,8 @@ import com.mig.patientservice.persistence.patient.Scan;
 import com.mig.patientservice.persistence.patient.ScanRepository;
 import com.mig.patientservice.service.patient.AnnotationService;
 import com.mig.patientservice.service.patient.ScanService;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import com.mig.patientservice.web.patient.request.CreateScan;
 import com.mig.patientservice.web.patient.response.ScanResponse;
 
@@ -51,25 +55,28 @@ public class ScanControllerFunctionalTest {
 	@Autowired
 	private MockMvc mvc;
 
-	@MockBean
+	@MockitoBean
 	private ModelMapper modelMapper;
+	
+	@MockitoBean
+    private JwtDecoder jwtDecoder;
 	
 	@Autowired
 	private ObjectMapper objectMapper;
 
-	@MockBean
+	@MockitoBean
 	private ScanService scanService;
 	
-	@MockBean
+	@MockitoBean
 	private AnnotationService annotationService;
 	
-	@MockBean
+	@MockitoBean
 	private PatientRepository patientRepository;
 	
-	@MockBean
+	@MockitoBean
 	private ScanRepository scanRepository;
 	
-	@MockBean
+	@MockitoBean
 	private AnnotationRepository annotationRepository;
 
 
@@ -79,9 +86,8 @@ public class ScanControllerFunctionalTest {
 	}
 
 	@Test
-	@WithMockUser(value = "auth0|james", authorities = "create:patient")
 	public void shouldReturn201WhenScanCreatedWithValidData() throws Exception {
-		
+		mockAuthUserWithScope("create:scan");
 		CreateScan scanBody = CreateScan.builder()
 									.patientId("1")
 									.build();
@@ -89,6 +95,7 @@ public class ScanControllerFunctionalTest {
 		given(scanService.createScan(any())).willReturn(Scan.builder().id("1").build());
 
 		mvc.perform(post("/v1/scans")
+				.header("Authorization", "Bearer mock-jwt")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(scanBody)))
 			.andExpect(status().isCreated())
@@ -97,14 +104,23 @@ public class ScanControllerFunctionalTest {
 	
 	
 	@Test
-	@WithMockUser(value = "auth0|james", authorities = "update:patient")
 	public void shouldReturn200WhenRetrievingScanData() throws Exception {
-
+		mockAuthUserWithScope("get:scan");
 		given(scanService.getScan(any())).willReturn(ScanResponse.builder().id("2").build());
 
 		mvc.perform(get("/v1/scans/2")
+				.header("Authorization", "Bearer mock-jwt")
 				.accept(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk());
+	}
+	
+	public void mockAuthUserWithScope(String scope) {
+		when(jwtDecoder.decode(anyString()))
+        .thenReturn(Jwt.withTokenValue("mock-jwt")
+            .header("alg", "RS256")
+            .claim("sub", "user@example.com")
+            .claim("scope", scope)  // Auth0 scope claim
+            .build());
 	}
 
 }

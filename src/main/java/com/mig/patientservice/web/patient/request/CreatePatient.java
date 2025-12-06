@@ -3,9 +3,9 @@ package com.mig.patientservice.web.patient.request;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import com.mig.patientservice.persistence.patient.PatientStatus;
 

@@ -1,4 +1,10 @@
 spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://mig-test.uk.auth0.com/
+          audiences: https://api.test.mig.com/
   application:
     name: patient-service
   profiles:

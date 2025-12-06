@@ -7,7 +7,7 @@ import static com.mig.patientservice.web.patient.ScanController.BASE_PATH;
 
 import java.net.URI;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +24,7 @@ import com.mig.patientservice.service.patient.ScanResponseConverter;
 import com.mig.patientservice.service.patient.ScanService;
 import com.mig.patientservice.web.patient.request.CreateScan;
 import com.mig.patientservice.web.patient.response.ScanResponse;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Authorization;
@@ -51,7 +52,7 @@ public class ScanController {
 		@RequestMapping(
 			method = GET,
 			produces = APPLICATION_JSON_VALUE)
-		//@PreAuthorize("hasAuthority('list:scans')")
+		@PreAuthorize("hasAuthority('SCOPE_list:scans')")
 		@ApiOperation(value = "List scans", authorizations = {
 			@Authorization(value = "auth0", scopes = {
 				@AuthorizationScope(scope = "list:scans", description = "")
@@ -67,7 +68,7 @@ public class ScanController {
 				path = "/{scanId}",
 				method = GET,
 				produces = APPLICATION_JSON_VALUE)
-			//@PreAuthorize("hasAuthority('list:patients')")
+			@PreAuthorize("hasAuthority('SCOPE_get:scan')")
 			@ApiOperation(value = "Get scan by id", authorizations = {
 				@Authorization(value = "auth0", scopes = {
 					@AuthorizationScope(scope = "get:scan", description = "")
@@ -82,7 +83,7 @@ public class ScanController {
 			method = POST,
 			produces = APPLICATION_JSON_VALUE,
 			consumes = APPLICATION_JSON_VALUE)
-		//@PreAuthorize("hasAuthority('create:scan')")
+		@PreAuthorize("hasAuthority('SCOPE_create:scan')")
 		@ApiOperation(value = "Create scan", authorizations = {
 			@Authorization(value = "auth0", scopes = {
 				@AuthorizationScope(scope = "create:scan", description = "")

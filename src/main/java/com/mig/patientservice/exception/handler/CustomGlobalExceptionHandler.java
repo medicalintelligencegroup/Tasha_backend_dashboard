@@ -10,6 +10,7 @@ import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -55,8 +56,6 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 		return buildResponseEntity(apiErrorInfo);
 	}
 	
-
-	@Override
 	protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
 		List<String> details = new ArrayList<>();
 		details.add(ex.getMostSpecificCause().getLocalizedMessage());
@@ -65,8 +64,7 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 		return buildResponseEntity(apiErrorInfo);
 	}
 
-	@Override
-	protected ResponseEntity<Object> handleConversionNotSupported(ConversionNotSupportedException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+	protected ResponseEntity<Object> handleConversionNotSupported(HttpMessageConversionException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
 		List<String> details = new ArrayList<>();
 		details.add(ex.getLocalizedMessage());
 		final ApiErrorInfo apiErrorInfo = new ApiErrorInfo(HttpStatus.BAD_REQUEST,
@@ -75,7 +73,6 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 	}
 
 
-	@Override
 	protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
 		List<String> details = new ArrayList<>();
 		final ApiErrorInfo apiErrorInfo = new ApiErrorInfo(HttpStatus.BAD_REQUEST,
@@ -84,7 +81,6 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 		return buildResponseEntity(apiErrorInfo);
 	}
 
-	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
 		List<String> details = new ArrayList<>();
 		for (ObjectError error : ex.getBindingResult().getAllErrors()) {

@@ -8,7 +8,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 import java.net.URI;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.mig.patientservice.persistence.patient.Patient;
 import com.mig.patientservice.service.patient.PatientConverter;
@@ -55,7 +56,7 @@ public class PatientController {
 		@RequestMapping(
 			method = GET,
 			produces = APPLICATION_JSON_VALUE)
-		//@PreAuthorize("hasAuthority('list:patients')")
+		//@PreAuthorize("hasAuthority('SCOPE_list:patients')")
 		@ApiOperation(value = "List patients", authorizations = {
 			@Authorization(value = "auth0", scopes = {
 				@AuthorizationScope(scope = "list:patients", description = "")
@@ -71,7 +72,7 @@ public class PatientController {
 				path = "/{patientId}",
 				method = GET,
 				produces = APPLICATION_JSON_VALUE)
-			//@PreAuthorize("hasAuthority('list:patients')")
+			@PreAuthorize("hasAuthority('SCOPE_get:patient')")
 			@ApiOperation(value = "Get patient by id", authorizations = {
 				@Authorization(value = "auth0", scopes = {
 					@AuthorizationScope(scope = "get:patient", description = "")
@@ -86,7 +87,7 @@ public class PatientController {
 			method = POST,
 			produces = APPLICATION_JSON_VALUE,
 			consumes = APPLICATION_JSON_VALUE)
-		//@PreAuthorize("hasAuthority('create:patient')")
+		@PreAuthorize("hasAuthority('SCOPE_create:patient')")
 		@ApiOperation(value = "Create patient", authorizations = {
 			@Authorization(value = "auth0", scopes = {
 				@AuthorizationScope(scope = "create:patient", description = "")
@@ -107,7 +108,7 @@ public class PatientController {
 				method = PATCH,
 				produces = APPLICATION_JSON_VALUE,
 				consumes = APPLICATION_JSON_VALUE)
-			//@PreAuthorize("hasAuthority('create:patient')")
+			@PreAuthorize("hasAuthority('SCOPE_update:patient')")
 			@ApiOperation(value = "Update patient", authorizations = {
 				@Authorization(value = "auth0", scopes = {
 					@AuthorizationScope(scope = "update:patient", description = "")
